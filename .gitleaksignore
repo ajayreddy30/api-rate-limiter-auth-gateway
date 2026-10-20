@@ -1,0 +1,6 @@
+0b6ca115ff3e083a9eac7bc61c89dadb32892c65:api-gateway/src/test/java/com/ratelimiter/apigateway/security/TestTokens.java:generic-api-key:17
+0b6ca115ff3e083a9eac7bc61c89dadb32892c65:api-gateway/src/test/java/com/ratelimiter/apigateway/security/TestTokens.java:generic-api-key:20
+0b6ca115ff3e083a9eac7bc61c89dadb32892c65:auth-service/src/test/java/com/ratelimiter/authservice/controller/AdminUserControllerSecurityTest.java:generic-api-key:25
+0b6ca115ff3e083a9eac7bc61c89dadb32892c65:product-service/src/test/java/com/ratelimiter/productservice/controller/ProductControllerSecurityTest.java:generic-api-key:31
+0b6ca115ff3e083a9eac7bc61c89dadb32892c65:auth-service/src/test/java/com/ratelimiter/authservice/service/AuthServiceTest.java:generic-api-key:32
+0b6ca115ff3e083a9eac7bc61c89dadb32892c65:auth-service/src/test/java/com/ratelimiter/authservice/security/JwtServiceTest.java:generic-api-key:18
