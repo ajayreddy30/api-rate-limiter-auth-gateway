@@ -1,0 +1,19 @@
+# Secrets and local config - NEVER commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+secrets/
+backups/
+
+# Build output / IDE
+target/
+*.class
+*.log
+.idea/
+*.iml
+.vscode/
+.DS_Store

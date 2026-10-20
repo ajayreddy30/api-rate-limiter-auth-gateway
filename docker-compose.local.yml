@@ -1,0 +1,16 @@
+# Local testing only (loopback ports). Use:
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up --build
+# Everything is bound to 127.0.0.1, so nothing is exposed to your network.
+services:
+  api-gateway:
+    ports: ["127.0.0.1:8080:8080"]
+  redis:
+    ports: ["127.0.0.1:6379:6379"]
+  auth-db:
+    ports: ["127.0.0.1:5432:5432"]
+  product-db:
+    ports: ["127.0.0.1:5433:5432"]
+
+networks:
+  backend:
+    internal: false

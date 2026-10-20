@@ -1,0 +1,10 @@
+# TLS terminator for production (docker-compose.prod.yml). Caddy obtains and renews certificates
+# automatically for $DOMAIN and redirects HTTP to HTTPS.
+{$DOMAIN} {
+	encode zstd gzip
+	header -Server
+	request_body {
+		max_size 64KB
+	}
+	reverse_proxy api-gateway:8080
+}

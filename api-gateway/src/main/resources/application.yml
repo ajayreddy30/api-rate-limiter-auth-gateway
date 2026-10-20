@@ -1,0 +1,87 @@
+server:
+  port: 8080
+  # Loopback by default; docker-compose sets BIND_ADDRESS=0.0.0.0 inside the private network.
+  address: ${BIND_ADDRESS:127.0.0.1}
+  shutdown: graceful
+  max-http-request-header-size: 16KB
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+
+spring:
+  application:
+    name: api-gateway
+  main:
+    banner-mode: "off"
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      # No default on purpose: the gateway refuses to start without the Redis password.
+      password: ${REDIS_PASSWORD}
+      timeout: 2s
+      connect-timeout: 2s
+  cloud:
+    gateway:
+      server:
+        webflux:
+          httpclient:
+            connect-timeout: 2000
+            response-timeout: 10s
+            wiretap: false
+          default-filters:
+            # Reject bodies larger than 16 KB (all request bodies in this API are tiny JSON documents).
+            - name: RequestSize
+              args:
+                maxSize: 16384
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                # Empty by default = no browser origin is allowed. Set CORS_ALLOWED_ORIGINS to a comma-separated
+                # list of exact origins, e.g. https://app.example.com. Never use "*".
+                allowed-origins: ${CORS_ALLOWED_ORIGINS:}
+                allowed-methods: GET,POST,PUT,DELETE
+                allowed-headers: Authorization,Content-Type
+                allow-credentials: false
+                max-age: 3600
+          routes:
+            - id: auth-service
+              uri: ${AUTH_SERVICE_URL:http://auth-service:8081}
+              predicates:
+                - Path=/auth/**
+            - id: product-service
+              uri: ${PRODUCT_SERVICE_URL:http://product-service:8082}
+              predicates:
+                - Path=/products/**
+
+# Nothing from Actuator is exposed over HTTP (if it is ever added, this exclusion still wins).
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: "*"
+
+security:
+  require-https: ${REQUIRE_HTTPS:true}
+  trusted-proxy-hops: ${TRUSTED_PROXY_HOPS:0}
+  internal-api-key: ${INTERNAL_API_KEY}
+  jwt:
+    secret: ${JWT_SECRET}
+    issuer: ${JWT_ISSUER:api-gateway-auth}
+    audience: ${JWT_AUDIENCE:api-gateway}
+
+# Token bucket per client: "capacity" is the largest burst, tokens refill continuously at
+# refill-tokens per refill-period-seconds. fail-open decides what happens if Redis is unavailable.
+rate-limit:
+  redis-timeout-ms: 300
+  tiers:
+    login:    { capacity: 10, refill-tokens: 10, refill-period-seconds: 60,  fail-open: false }
+    register: { capacity: 10, refill-tokens: 10, refill-period-seconds: 600, fail-open: false }
+    read:     { capacity: 60, refill-tokens: 60, refill-period-seconds: 60,  fail-open: true }
+    write:    { capacity: 20, refill-tokens: 20, refill-period-seconds: 60,  fail-open: true }
+
+logging:
+  level:
+    root: INFO
