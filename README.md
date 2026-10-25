@@ -1,4 +1,4 @@
-# Secure API Gateway
+# API Rate Limiter & Authentication Gateway
 
 Spring Cloud Gateway (reactive) in front of two Spring Boot services, with JWT authentication, role-based
 authorization and Redis token-bucket rate limiting.
